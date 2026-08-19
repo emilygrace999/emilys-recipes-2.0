@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emily's Recipes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#c9b6ea; --purple-deep:#8f66c9;
+    --pink:#f7bfd6; --pink-deep:#e8629b;
+    --green:#b3e3c2; --green-deep:#4fae78;
+    --blue:#aedcf2; --blue-deep:#3ea3d6;
+    --cream:#fffaf6; --paper:#ffffff;
+    --ink:#453a56; --ink-soft:#7a6f8c; --line:#eee0f2;
+    --shadow: 0 10px 30px rgba(150,110,180,0.14);
+    --shadow-sm: 0 4px 14px rgba(150,110,180,0.12);
+    --radius-lg: 26px; --radius-md: 18px; --radius-sm: 12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 8% 4%, rgba(247,191,214,0.55) 0%, transparent 40%),
+      radial-gradient(circle at 92% 10%, rgba(174,220,242,0.55) 0%, transparent 42%),
+      radial-gradient(circle at 15% 92%, rgba(179,227,194,0.55) 0%, transparent 42%),
+      radial-gradient(circle at 88% 88%, rgba(201,182,234,0.55) 0%, transparent 45%),
+      #fffaf6;
+    background-attachment: fixed;
+    color:var(--ink); font-family:'Nunito', sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  h1,h2,h3,h4,.display{ font-family:'Baloo 2','Nunito',sans-serif; font-weight:700; color:var(--ink); margin:0; }
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit;}
+  img{max-width:100%; display:block;}
+  ::selection{background:var(--pink); color:#3a2a44;}
+
+  /* ---------- top bar / search ---------- */
+  .topbar{ position:sticky; top:0; z-index:50; background:rgba(255,250,246,0.9); backdrop-filter: blur(10px); border-bottom:1px solid var(--line); }
+  .topbar-inner{ max-width:1200px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .brand{ display:flex; align-items:center; gap:10px; cursor:pointer; flex-shrink:0; }
+  .brand-mark{ width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, var(--pink), var(--purple)); display:flex; align-items:center; justify-content:center; font-size:19px; box-shadow:var(--shadow-sm); }
+  .brand-text{ font-family:'Baloo 2'; font-weight:800; font-size:19px; color:var(--ink); line-height:1;}
+  .brand-text span{ display:block; font-family:'Nunito'; font-weight:600; font-size:11px; letter-spacing:0.06em; color:var(--ink-soft); text-transform:uppercase; margin-top:2px;}
+  .search-wrap{ flex:1 1 260px; min-width:220px; position:relative; }
+  .search-wrap input{ width:100%; padding:11px 16px 11px 40px; border-radius:999px; border:2px solid var(--line); background:var(--paper); font-size:14.5px; color:var(--ink); outline:none; transition:border-color .15s ease, box-shadow .15s ease; }
+  .search-wrap input:focus{ border-color:var(--purple); box-shadow:0 0 0 4px rgba(201,182,234,0.25); }
+  .search-icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:0.55; font-size:15px; }
+  .nav-links{ display:flex; align-items:center; gap:6px; flex-shrink:0; }
+  .nav-links button{ background:none; border:none; padding:8px 12px; border-radius:999px; font-weight:700; font-size:13.5px; color:var(--ink-soft); cursor:pointer; transition:background .15s ease, color .15s ease; }
+  .nav-links button:hover, .nav-links button.active{ background:var(--purple); color:#fff; }
+  .filter-row{ max-width:1200px; margin:0 auto; padding:0 20px 14px; display:flex; gap:8px; flex-wrap:wrap; }
+  .chip{ padding:6px 13px; border-radius:999px; font-size:12.5px; font-weight:700; border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); cursor:pointer; transition: all .15s ease; }
+  .chip:hover{ border-color:var(--purple); }
+  .chip.active{ background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  .page{ max-width:1200px; margin:0 auto; padding:36px 20px 90px; position:relative; }
+
+  .hero{ display:flex; align-items:center; justify-content:space-between; gap:30px; margin-bottom:34px; flex-wrap:wrap; }
+  .hero-text h1{ font-size:clamp(30px,5vw,44px); line-height:1.08; }
+  .hero-text h1 em{ font-style:normal; background:linear-gradient(90deg,var(--pink-deep),var(--purple-deep)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-text p{ margin-top:12px; color:var(--ink-soft); font-size:16px; max-width:460px; }
+
+  .home-layout{ display:flex; gap:34px; align-items:flex-start; }
+  .icon-shelf{
+    flex-shrink:0; width:216px; padding:18px; border-radius:28px;
+    background: linear-gradient(160deg, #ffd9ea 0%, #e3caff 35%, #c3e8ff 68%, #c7f0d3 100%);
+    box-shadow: var(--shadow);
+  }
+  .icon-rail{ display:flex; flex-direction:column; gap:12px; }
+  .cat-icon{
+    display:flex; align-items:center; gap:13px; padding:12px 14px; border-radius:20px; cursor:pointer;
+    background:rgba(255,255,255,0.92); box-shadow:0 3px 10px rgba(80,40,90,0.10);
+    transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  }
+  .cat-icon:hover{ transform: scale(1.07) translateX(3px); box-shadow:0 8px 18px rgba(80,40,90,0.18); }
+  .cat-icon .swatch{ width:44px; height:44px; border-radius:15px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:21px; box-shadow: inset 0 -3px 6px rgba(0,0,0,0.08); }
+  .cat-icon .label{ font-family:'Baloo 2'; font-weight:700; font-size:14.5px; }
+  .cat-icon .sub{ font-size:10.5px; color:var(--ink-soft); font-weight:600; }
+  .swatch.c-breakfast{ background:linear-gradient(145deg,#ffd9ea,#f28fb8); }
+  .swatch.c-snacks{ background:linear-gradient(145deg,#ffe3b8,#ffb35c); }
+  .swatch.c-main{ background:linear-gradient(145deg,#c3e8ff,#4fa9e0); }
+  .swatch.c-sides{ background:linear-gradient(145deg,#c7f0d3,#57c584); }
+  .swatch.c-dessert{ background:linear-gradient(145deg,#e3caff,#a06ee0); }
+  .swatch.c-drinks{ background:linear-gradient(145deg,#b8f2ea,#3ecfc0); }
+  .swatch.c-favorites{ background:linear-gradient(145deg,#ffc9c9,#ff6f8a); }
+  .swatch.c-add{ background:linear-gradient(145deg,#f4f0ff,#c9b6ea); color:#5b3d8a; font-weight:800; }
+
+  .home-right{ flex:1; min-width:0; }
+  .section-title{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px; }
+  .section-title h2{ font-size:21px; }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:20px; }
+  .card{ background:var(--paper); border-radius:var(--radius-md); overflow:hidden; box-shadow:var(--shadow-sm); cursor:pointer; border:1px solid var(--line); transition: transform .18s ease, box-shadow .18s ease; position:relative; }
+  .card:hover{ transform:translateY(-4px); box-shadow:var(--shadow); }
+  .card .thumb{ width:100%; aspect-ratio:4/3; object-fit:cover; background:linear-gradient(135deg,#f3e6f7,#e6f0fb); }
+  .card .fav-btn{ position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.92); border:none; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); }
+  .card .body{ padding:14px 15px 16px; }
+  .card .cat-tag{ font-size:10.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--purple-deep); }
+  .card h3{ font-size:15.5px; margin-top:4px; line-height:1.3; }
+  .card .meta{ display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--ink-soft); font-weight:600; }
+  .card .tagrow{ display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; }
+  .card .tagrow span{ font-size:10.5px; background:var(--cream); border:1px solid var(--line); padding:2px 8px; border-radius:999px; color:var(--ink-soft); font-weight:700; }
+
+  .empty{ text-align:center; padding:70px 20px; color:var(--ink-soft); }
+  .empty .big{ font-size:40px; margin-bottom:10px; }
+
+  .cat-header{ display:flex; align-items:center; gap:16px; margin-bottom:30px; }
+  .cat-header .swatch{ width:58px; height:58px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:28px; }
+  .back-link{ display:inline-flex; align-items:center; gap:6px; font-weight:700; color:var(--ink-soft); font-size:13.5px; cursor:pointer; margin-bottom:16px; }
+  .back-link:hover{ color:var(--purple-deep); }
+
+  .recipe-head{ margin-bottom:6px; }
+  .recipe-title-row{ display:flex; align-items:flex-start; gap:14px; justify-content:space-between; flex-wrap:wrap; }
+  .recipe-title-row h1{ font-size:clamp(26px,4vw,36px); line-height:1.15; }
+  .heart-btn{ background:var(--paper); border:2px solid var(--line); width:46px; height:46px; border-radius:50%; font-size:19px; cursor:pointer; flex-shrink:0; box-shadow:var(--shadow-sm); transition: transform .15s ease; }
+  .heart-btn:hover{ transform:scale(1.1); }
+  .heart-btn.is-fav{ background:linear-gradient(135deg,var(--pink),var(--purple)); border-color:transparent; }
+  .recipe-meta{ display:flex; flex-wrap:wrap; gap:14px; margin:12px 0 6px; color:var(--ink-soft); font-size:13.5px; font-weight:600; }
+  .recipe-meta .stars{ color:#e8a23b; font-weight:800; }
+  .source-line{ font-size:13px; color:var(--ink-soft); margin-top:4px; }
+  .source-line a{ color:var(--purple-deep); font-weight:700; }
+  .action-row{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:22px 0 8px; padding:14px 18px; background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); }
+  .btn{ padding:10px 18px; border-radius:999px; border:none; font-weight:800; font-size:13.5px; cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition: transform .15s ease, opacity .15s ease; }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-primary{ background:linear-gradient(135deg,var(--purple),var(--pink)); color:#3a2a44; }
+  .btn-ghost{ background:var(--cream); color:var(--ink); border:1.5px solid var(--line); }
+  .btn-danger{ background:#ffe3e3; color:#b5354a; border:1.5px solid #ffc9c9; }
+  .switch-wrap{ display:flex; align-items:center; gap:9px; margin-left:auto; }
+  .switch-label{ font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .switch{ width:44px; height:25px; border-radius:999px; background:var(--line); position:relative; cursor:pointer; border:none; transition:background .2s ease; flex-shrink:0; }
+  .switch::after{ content:""; position:absolute; top:3px; left:3px; width:19px; height:19px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.25); transition:transform .2s ease; }
+  .switch.on{ background:linear-gradient(135deg,var(--green-deep),var(--blue-deep)); }
+  .switch.on::after{ transform:translateX(19px); }
+  .wake-status{ font-size:11.5px; color:var(--green-deep); font-weight:700; }
+  .photos{ display:grid; grid-template-columns:1fr; gap:14px; margin:22px 0; }
+  .photos img{ width:100%; border-radius:var(--radius-md); box-shadow:var(--shadow-sm); background:linear-gradient(135deg,#f3e6f7,#e6f0fb); }
+  .desc{ font-size:15.5px; line-height:1.7; color:var(--ink); margin:18px 0; }
+  #recipe-core{ margin-top:34px; scroll-margin-top:90px; }
+  .core-grid{ display:grid; grid-template-columns: 1fr 1.5fr; gap:34px; }
+  @media (max-width:760px){ .core-grid{ grid-template-columns:1fr; } .home-layout{ flex-direction:column; } .icon-shelf{ width:100%; } .icon-rail{ flex-direction:row; flex-wrap:wrap; } .cat-icon{ flex:1 1 150px; } }
+
+  .panel{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-md); padding:22px 24px; box-shadow:var(--shadow-sm); }
+  .panel h3{ font-size:16px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .ingredients-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .ingredients-list li{ display:flex; gap:10px; align-items:flex-start; font-size:14.5px; line-height:1.5; }
+  .ingredients-list li::before{ content:"●"; color:var(--purple); font-size:8px; margin-top:7px; }
+  .steps-list{ list-style:none; margin:0; padding:0; counter-reset:step; display:flex; flex-direction:column; gap:16px; }
+  .steps-list li{ counter-increment:step; display:flex; gap:14px; font-size:14.5px; line-height:1.65; }
+  .steps-list li::before{ content:counter(step); flex-shrink:0; width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--green)); color:#2c4a3e; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; }
+
+  .nutrition-panel{ margin-top:24px; }
+  .nutrition-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:12px; margin-top:6px; }
+  .nut-cell{ text-align:center; background:var(--cream); border-radius:14px; padding:12px 6px; border:1px solid var(--line); }
+  .nut-cell .num{ font-family:'Baloo 2'; font-weight:800; font-size:18px; color:var(--purple-deep); }
+  .nut-cell .lbl{ font-size:10.5px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-top:2px; }
+  .nut-caption{ font-size:11.5px; color:var(--ink-soft); margin-top:10px; font-style:italic; }
+
+  .notes-panel{ margin-top:24px; }
+  .notes-panel textarea{ width:100%; min-height:120px; border-radius:14px; border:1.5px solid var(--line); padding:14px; font-family:inherit; font-size:14px; color:var(--ink); resize:vertical; outline:none; background:var(--cream); }
+  .notes-panel textarea:focus{ border-color:var(--purple); }
+  .notes-save-row{ display:flex; align-items:center; gap:12px; margin-top:10px; }
+  .save-status{ font-size:12.5px; color:var(--green-deep); font-weight:700; opacity:0; transition:opacity .3s ease; }
+  .save-status.show{ opacity:1; }
+  .footer-note{ text-align:center; margin-top:70px; color:var(--ink-soft); font-size:12.5px; }
+
+  /* ---------- add-a-recipe form ---------- */
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:700px){ .form-grid{ grid-template-columns:1fr; } }
+  .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  .field label{ font-size:12.5px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; }
+  .field input, .field select, .field textarea{
+    padding:10px 13px; border-radius:12px; border:1.5px solid var(--line); background:var(--cream);
+    font-family:inherit; font-size:14px; color:var(--ink); outline:none; resize:vertical;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--purple); }
+  .tagcheck-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tagcheck{ display:flex; align-items:center; gap:5px; padding:6px 11px; border-radius:999px; border:1.5px solid var(--line); font-size:12px; font-weight:700; color:var(--ink-soft); cursor:pointer; background:var(--cream); }
+  .tagcheck input{ accent-color: var(--purple-deep); }
+  .paste-box{ background:linear-gradient(160deg,#fff5fa,#f3f0ff); border:2px dashed var(--purple); border-radius:20px; padding:20px; margin-bottom:26px; }
+  .paste-box h3{ font-size:16px; margin-bottom:6px; }
+  .paste-box p{ font-size:13px; color:var(--ink-soft); margin:0 0 12px; line-height:1.5;}
+  .paste-box textarea{ width:100%; min-height:140px; border-radius:14px; border:1.5px solid var(--line); padding:14px; font-family:inherit; font-size:13.5px; color:var(--ink); resize:vertical; outline:none; background:var(--paper); }
+  .hint{ font-size:12px; color:var(--ink-soft); margin-top:6px; }
+
+  #print-only{ display:none; }
+  @media print{ #print-only{ display:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand" onclick="navigate('home')">
+      <div class="brand-mark">🌸</div>
+      <div class="brand-text">Emily's Recipes<span>whole food · plant-based · gf · df</span></div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search-input" type="text" placeholder="Search recipes, ingredients, or 'chocolate granola'…" oninput="onSearchInput(this.value)">
+    </div>
+    <div class="nav-links">
+      <button onclick="navigate('home')" id="nav-home">Home</button>
+      <button onclick="navigate('favorites')" id="nav-fav">♡ Favorites</button>
+      <button onclick="navigate('add')" id="nav-add">＋ Add a Recipe</button>
+    </div>
+  </div>
+  <div class="filter-row" id="filter-row"></div>
+</div>
+
+<div class="page" id="app"></div>
+
+<script>
+/* =========================================================
+   PLACEHOLDER IMAGE (used if a photo fails to load)
+========================================================= */
+const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+     <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+       <stop offset="0%" stop-color="#f3e6f7"/><stop offset="100%" stop-color="#dcefe0"/>
+     </linearGradient></defs>
+     <rect width="100%" height="100%" fill="url(#g)"/>
+     <text x="50%" y="52%" font-size="72" text-anchor="middle" dominant-baseline="middle">🌷</text>
+   </svg>`
+);
+function imgTag(src, alt, cls){
+  const safeAlt = esc(alt);
+  return `<img class="${cls}" src="${esc(src)}" alt="${safeAlt}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}';">`;
+}
+
+/* =========================================================
+   DATA
+========================================================= */
+const CATEGORIES = [
+  {id:'breakfast', label:'Breakfast', sub:'mornings', icon:'🥞', swatch:'c-breakfast'},
+  {id:'snacks',    label:'Snacks',    sub:'anytime',  icon:'🥨', swatch:'c-snacks'},
+  {id:'main',      label:'Main Dishes', sub:'dinner', icon:'🍲', swatch:'c-main'},
+  {id:'sides',     label:'Sides',     sub:'to share', icon:'🥗', swatch:'c-sides'},
+  {id:'dessert',   label:'Dessert',   sub:'sweet tooth', icon:'🍰', swatch:'c-dessert'},
+  {id:'drinks',    label:'Drinks',    sub:'sip & glow', icon:'🥤', swatch:'c-drinks'},
+  {id:'favorites', label:'Favorites', sub:'your picks', icon:'💗', swatch:'c-favorites'},
+  {id:'add',       label:'Add a Recipe', sub:'grow the site', icon:'＋', swatch:'c-add'},
+];
+const REAL_CATEGORIES = CATEGORIES.filter(c=>c.id!=='favorites' && c.id!=='add');
+
+const ALL_TAGS = ["Oil-Free","No Added Sugar","Date-Sweetened","No-Bake","No-Cook","Bake","One-Pot","One-Bowl","Quick","High-Protein","Freezer-Friendly","Make-Ahead","Kid-Friendly"];
+
+const BUILT_IN_RECIPES = [
+{
+  id:'banana-oat-muffins', category:'breakfast',
+  title:'Banana Oat Muffins',
+  image:'https://eatplant-based.com/wp-content/uploads/2024/07/Banana-Oat-Muffins-0617.jpg',
+  source:{name:'EatPlant-Based', url:'https://eatplant-based.com/banana-oat-muffins/'},
+  rating:4.4, reviews:58, prep:20, cook:25, servings:'15 muffins', servingsCount:15,
+  tags:['Bake','Freezer-Friendly','Kid-Friendly','Date-Sweetened'],
+  description:"Soft, moist muffins built on gluten-free oat flour with no added oil — ripe banana and applesauce keep them tender. Swap the sugar for date sugar or a pinch of stevia to keep them fully unrefined-sugar-free.",
+  ingredients:["2 cups gluten-free oat flour (blend GF rolled oats until powdery)","1 tsp baking powder","1 tsp baking soda","1 tsp cinnamon","1/2 tsp salt","1/2 cup date sugar (or stevia to taste)","1 large ripe banana, mashed","1 cup unsweetened applesauce","1/2 cup unsweetened plant milk","1 tbsp vanilla extract","1 tsp apple cider vinegar","1/4 cup chopped walnuts (optional)"],
+  steps:["Preheat the oven to 350°F. Blend gluten-free rolled oats in a blender until they turn into a fine flour — about 2 cups.","Whisk the oat flour together with the baking powder, baking soda, cinnamon, salt, and sweetener in a large bowl.","In a separate bowl, mash the banana, then whisk in the applesauce, plant milk, vanilla, and vinegar.","Pour the wet mixture into the dry ingredients and stir until just combined. Fold in walnuts if using.","Divide the batter among a silicone muffin pan (paper liners tend to stick since there's no oil in this batter).","Bake for 25 minutes, until a toothpick inserted in the center comes out clean. Cool before serving."]
+},
+{
+  id:'oat-energy-balls', category:'breakfast',
+  title:'Almond Butter Oat Energy Balls',
+  image:'https://eatplant-based.com/wp-content/uploads/2024/06/oat-energy-balls-0048.jpg',
+  source:{name:'EatPlant-Based', url:'https://eatplant-based.com/oat-energy-balls/'},
+  rating:5.0, reviews:8, prep:10, cook:0, servings:'12 balls', servingsCount:12,
+  tags:['No-Bake','Quick','Freezer-Friendly','Kid-Friendly'],
+  description:"No-cook, no-fuss energy bites loaded with oats, seeds, and dried fruit. Mix, roll, chill — done in ten minutes and perfect for busy mornings.",
+  ingredients:["1 cup gluten-free quick oats","1/4 cup chopped walnuts","1/4 cup dried blueberries (unsweetened)","1/4 cup dried cranberries (unsweetened or juice-sweetened)","2 tbsp sunflower seeds","2 tbsp pumpkin seeds","2 tbsp flax seeds","2 tbsp chia seeds","3/4 cup almond butter","2 tbsp mashed date paste (or maple syrup)","1 tsp vanilla extract","1/2 tsp salt","1/2 tsp cinnamon","1/4 tsp nutmeg"],
+  steps:["Stir the oats, walnuts, dried blueberries and cranberries, sunflower seeds, pumpkin seeds, flax, and chia seeds together in a large bowl.","Add the almond butter, date paste, vanilla, salt, cinnamon, and nutmeg, and mix until sticky and well combined. Add a splash more almond butter if it's too dry, or a few more oats if too wet.","Roll into balls about the size of a ping-pong ball.","Chill in the fridge to firm up, or press into a lined dish and cut into bars instead. Store in an airtight container."]
+},
+{
+  id:'granola-bars', category:'snacks',
+  title:'Chewy Gluten-Free Granola Bars',
+  image:'https://eatplant-based.com/wp-content/uploads/2022/10/Granola-Bars-1.jpg',
+  source:{name:'EatPlant-Based (recipe by Debbie Adler)', url:'https://eatplant-based.com/granola-bars/'},
+  rating:4.8, reviews:5, prep:20, cook:20, servings:'9 bars', servingsCount:9,
+  tags:['No-Bake','Freezer-Friendly','Date-Sweetened'],
+  description:"Naturally sweet, chewy bars held together with blended dates instead of syrupy binders — packed with nuts, seeds, and toasted oats.",
+  ingredients:["1 cup gluten-free rolled oats","1/2 cup raw unsalted almonds","1/2 cup raw pistachios","1/4 cup raw unsalted pumpkin seeds","3 tbsp chia seeds","2 tbsp water (to help the dates blend)","15 Medjool dates, pitted and soaked 20 minutes, drained"],
+  steps:["Soak the pitted Medjool dates in water for about 20 minutes to soften.","Preheat the oven to 300°F. Spread the oats, almonds, pistachios, pumpkin seeds, and chia seeds on a lined baking sheet, drizzle with a little of the date-soaking water, and toss to coat.","Bake for 20 minutes, until lightly golden.","Blend the drained, softened dates until smooth, then pulse in the toasted granola mixture until everything holds together but still has some texture.","Press the mixture into a parchment-lined 8x8-inch pan and smooth the top.","Freeze for an hour, then slice into 9 bars. Store in the freezer, individually wrapped."]
+},
+{
+  id:'roasted-chickpeas', category:'snacks',
+  title:'Salt & Vinegar Roasted Chickpeas',
+  image:'https://eatplant-based.com/wp-content/uploads/2024/07/oil-free-roasted-chickpeas-5144.jpg',
+  source:{name:'EatPlant-Based', url:'https://eatplant-based.com/salt-vinegar-roasted-chickpea-snack/'},
+  rating:4.7, reviews:55, prep:45, cook:45, servings:'4 servings', servingsCount:4,
+  tags:['Oil-Free','Bake','No Added Sugar'],
+  description:"Crunchy, tangy, protein-packed chickpeas roasted low and slow with no oil at all — a road-trip and lunchbox favorite.",
+  ingredients:["1 (15 oz) can chickpeas, or 1½ cups cooked chickpeas","2 cups white vinegar (for soaking)","1 tbsp garlic powder","1 tsp sea salt","1 tbsp dried parsley flakes"],
+  steps:["Drain the chickpeas, then simmer them in the vinegar for 15 minutes to pick up a tangy flavor.","Turn off the heat and let the chickpeas sit in the vinegar for another 30 minutes.","Preheat the oven to 400°F and line a baking sheet with parchment paper.","Drain off the vinegar (don't rinse) and spread the chickpeas on the sheet with the garlic powder, salt, and parsley.","Roast for about 45 minutes, stirring every 15 minutes, until deeply golden and crunchy — watch closely near the end so they don't overcook.","Cool slightly before serving. Air-fryer option: 360°F for about 17 minutes, shaking every 5 minutes."]
+},
+{
+  id:'feel-good-granola-bars', category:'snacks',
+  title:'Feel Good Hearty Granola Bars',
+  image:'https://ohsheglows.com/wp-content/uploads/2014/05/granolabars-7933.jpg',
+  source:{name:'Oh She Glows', url:'https://ohsheglows.com/feel-good-hearty-granola-bars/'},
+  rating:4.9, reviews:59, prep:15, cook:24, servings:'16 bars', servingsCount:16,
+  tags:['Bake','Oil-Free','No Added Sugar','Freezer-Friendly'],
+  description:"Soft-baked, hearty bars sweetened only with banana and dried fruit — no oil and no added sugar at all, just oats, nuts, and seeds pressed into a pan.",
+  nutrition:{cal:200, p:6, c:20, f:11, fi:4, source:'as published by Oh She Glows'},
+  ingredients:["1½ cups mashed ripe banana (about 3 large)","1 tsp pure vanilla extract","2 cups gluten-free rolled oats","1/2 to 3/4 cup unsweetened dried cherries, cranberries, or blueberries","1/2 cup walnuts, chopped","1/2 cup sunflower seeds","1/2 cup pepita seeds","1/2 cup sliced almonds","1/4 cup hemp hearts","1 tsp cinnamon","1/4 tsp fine sea salt"],
+  steps:["Preheat the oven to 350°F. Line a 9x13-inch baking dish with parchment paper, leaving an overhang.","Mash the banana until smooth (you want 1½ cups) and stir in the vanilla.","Pulse the oats in a food processor or blender until coarsely chopped, then stir into the banana mixture.","Stir in the dried fruit, walnuts, sunflower and pepita seeds, almonds, hemp hearts, cinnamon, and salt until fully combined — the dough will be heavy and a bit wet.","Spoon into the prepared dish and press firmly into an even layer with damp hands.","Bake 22-26 minutes, until firm and lightly golden at the edges. Cool completely on a rack before slicing into bars."]
+},
+{
+  id:'lentil-chili', category:'main',
+  title:'One-Pot Lentil Chili',
+  image:'https://plantyou.com/wp-content/uploads/2019/11/74667932_544362302988447_3290256166361235456_n-1-1-scaled.jpg',
+  source:{name:'PlantYou', url:'https://plantyou.com/one-pot-whole-foods-plant-based-lentil-chili-bean-free/'},
+  rating:4.8, reviews:22, prep:10, cook:40, servings:'4 servings', servingsCount:4,
+  tags:['Oil-Free','One-Pot','Freezer-Friendly'],
+  description:"A hearty, budget-friendly chili built entirely on lentils instead of beans — completely oil-free and ready in one pot for weeknight batch cooking. Swap the maple syrup for a few drops of stevia if you'd rather skip it.",
+  ingredients:["1 red bell pepper, diced","1/2 yellow onion, diced","2 cloves garlic, minced","3½ cups canned crushed tomatoes","1 cup canned green lentils, drained and rinsed","3½ cups vegetable broth, divided","2 tsp ground cumin","2 tsp chili powder","1 tsp sea salt","1/4 tsp cayenne pepper","1-2 tbsp maple syrup, or a few drops of stevia","1 cup frozen corn","1 cup chopped cilantro","2 tbsp almond butter"],
+  steps:["Warm 2-3 tbsp of the vegetable broth in a large pot. Add the bell pepper, onion, and garlic, and sauté 3-5 minutes until the onion softens.","Stir in the lentils, crushed tomatoes, and remaining broth, and bring to a boil.","Add the cumin, chili powder, salt, cayenne, and sweetener. Cover and simmer 15-20 minutes, stirring every few minutes.","Stir in the corn and cilantro and cook 10 more minutes.","Remove from the heat and stir in the almond butter until smooth. Taste and adjust seasoning, then serve."]
+},
+{
+  id:'chickpea-lentil-curry', category:'main',
+  title:'Chickpea & Lentil Curry',
+  image:'https://thepeskyvegan.com/wp-content/uploads/2023/09/lentil-chickpea-curry-bowl-overhead.jpg',
+  source:{name:'The Pesky Vegan', url:'https://thepeskyvegan.com/recipes/chickpea-lentil-curry/'},
+  rating:5.0, reviews:1, prep:10, cook:30, servings:'4 servings', servingsCount:4,
+  tags:['One-Pot','Freezer-Friendly'],
+  description:"A creamy, fragrant curry that doubles up on legumes — canned chickpeas and green lentils simmered with coconut milk and spinach. A small amount of oil is used to soften the onion.",
+  ingredients:["1 tbsp oil (a light amount is used here to soften the onion)","1 onion, finely chopped","1/2 tsp salt","4 garlic cloves, finely chopped","1½ tbsp minced fresh ginger","1 small chile, thinly sliced (optional, to taste)","2 tsp ground cumin","1 tsp ground fenugreek (optional)","1 tsp ground turmeric","1 (14 oz) can tomatoes","1 (14 oz) can chickpeas, drained and rinsed","1 (14 oz) can green lentils, drained and rinsed","2 cups water or vegetable stock","1 (7 oz) can coconut milk","3½ oz fresh spinach","1 lime, zest and juice","1 tsp garam masala","Small handful fresh cilantro, chopped"],
+  steps:["Warm the oil in a large pan and cook the onion with the salt for 6-8 minutes, until soft.","Stir in the garlic, ginger, and chile, and cook a couple of minutes more, then add the cumin, fenugreek, and turmeric.","Add the tomatoes and cook a few minutes to build the sauce base.","Stir in the drained chickpeas and lentils along with the water or stock. Bring to a gentle simmer, then cover and cook on low for 8-10 minutes, stirring occasionally.","Stir in the coconut milk and spinach (add the spinach gradually so it wilts down), plus the lime zest and juice. Cook 5 more minutes.","Stir in the garam masala and cilantro, adjust seasoning to taste, and serve over rice."]
+},
+{
+  id:'potato-salad', category:'sides',
+  title:'Creamy Country Potato Salad',
+  image:'https://eatplant-based.com/wp-content/uploads/2024/07/vegan-potato-salad-6506.jpg',
+  source:{name:'EatPlant-Based', url:'https://eatplant-based.com/country-potato-salad/'},
+  rating:4.5, reviews:30, prep:15, cook:20, servings:'6 servings', servingsCount:6,
+  tags:['Make-Ahead','Oil-Free','No Added Sugar'],
+  description:"A lighter take on classic potato salad — creamy silken-tofu 'mayo' stands in for the usual oily version, with a tangy Southern-style dressing.",
+  ingredients:["6 medium-large Russet potatoes, peeled and diced","1 small onion, diced (purple onion for color)","1 tbsp sweet pickle relish (no sugar added, if available)","2-3 tbsp low-fat vegan mayo (see below)","1 tsp yellow mustard","1 tsp garlic powder","1 tsp dried parsley flakes","1 pinch smoked paprika","1 tsp salt, or to taste","Black pepper, to taste","— for the eggless mayo —","1 (12 oz) package silken tofu","1 tbsp Dijon mustard","1 tbsp red wine vinegar or lemon juice","1/4 tsp sea salt"],
+  steps:["Blend the silken tofu, Dijon mustard, vinegar, and salt until completely smooth to make the eggless mayo — you'll only need a few tablespoons for this recipe.","Peel and dice the potatoes into bite-sized chunks, and dice the onion.","Boil the potatoes in a large pot of water until fork-tender, about 15-20 minutes, then drain and let cool slightly.","In a large bowl, combine the potatoes, onion, mayo, relish, mustard, garlic powder, parsley, paprika, salt, and pepper.","Stir well until the potatoes break down slightly and everything is creamy. Chill before serving."]
+},
+{
+  id:'asian-green-beans', category:'sides',
+  title:'Oil-Free Asian Green Beans',
+  image:'https://eatplant-based.com/wp-content/uploads/2021/07/oil-free-asian-green-beans-7269.jpg',
+  source:{name:'EatPlant-Based', url:'https://eatplant-based.com/love-my-medicine/'},
+  rating:4.6, reviews:12, prep:10, cook:15, servings:'4 servings', servingsCount:4,
+  tags:['Oil-Free','Quick'],
+  description:"Crisp-tender green beans in a savory-sweet tamari sauce — no oil, no wok skills required, on the table in 25 minutes.",
+  ingredients:["1 lb fresh green beans, trimmed","1/2 cup sliced onion","2 cloves garlic, minced","3/4 cup vegetable broth, for cooking","1/2 tsp garlic powder","Sea salt, to taste","— for the sauce —","1/4 cup tamari (gluten-free soy sauce)","1/4 cup water","1 tsp lemon juice","1 tsp minced garlic","A few drops of stevia, or 1/2 tbsp maple syrup","1 tbsp arrowroot powder or cornstarch"],
+  steps:["Dry-sauté the sliced onion in a wide pan over medium heat, adding splashes of vegetable broth as needed to keep it from sticking, until lightly browned.","Add the minced garlic, green beans, garlic powder, salt, and 3/4 cup broth. Cover and cook 12-15 minutes, until the beans are crisp-tender.","Meanwhile, whisk together the tamari, water, lemon juice, garlic, sweetener, and arrowroot powder for the sauce.","Pour the sauce over the beans, lower the heat, and stir until glossy and thickened, about 3-5 minutes. Serve warm."]
+},
+{
+  id:'black-bean-brownies', category:'dessert',
+  title:'Fudgy Black Bean Brownies',
+  image:'https://eatplant-based.com/wp-content/uploads/2024/06/black-bean-brownies-9630.jpg',
+  source:{name:'EatPlant-Based', url:'https://eatplant-based.com/black-bean-brownies/'},
+  rating:4.5, reviews:45, prep:10, cook:20, servings:'9 brownies', servingsCount:9,
+  tags:['Oil-Free','Bake','Freezer-Friendly','Date-Sweetened'],
+  description:"Rich, fudgy brownies with a secret: a can of black beans in place of butter and flour. No one will guess — they just taste like a dense chocolate brownie. Date sugar keeps them refined-sugar-free.",
+  ingredients:["1 cup gluten-free rolled oats, blended into flour","1 (15 oz) can black beans, drained and rinsed (or 1½ cups cooked)","1/4 cup cocoa powder","2/3 cup date sugar (or stevia to taste)","1/4 cup unsweetened applesauce","1/2 cup unsweetened plant milk","1 tbsp vanilla extract","1/2 tsp baking powder","1/4 tsp salt","1/2 cup unsweetened or stevia-sweetened dark chocolate chips","1/4 cup chopped walnuts (optional)"],
+  steps:["Preheat the oven to 350°F. Blend the oats into a fine flour.","Add the black beans, cocoa powder, sweetener, applesauce, plant milk, vanilla, baking powder, and salt to a blender with the oat flour. Blend until completely smooth, scraping down the sides as needed.","Fold in the chocolate chips and walnuts by hand.","Spread the batter into a parchment-lined 8x8-inch pan and smooth the top.","Bake for 20-25 minutes, until the edges look set and slightly darker. Cool before slicing."]
+},
+{
+  id:'cookie-dough', category:'dessert',
+  title:'Edible Chickpea Cookie Dough',
+  image:'https://plantyou.com/wp-content/uploads/2022/07/IMG_4852.jpg',
+  source:{name:'PlantYou', url:'https://plantyou.com/vegan-cookie-dough/'},
+  rating:4.9, reviews:13, prep:5, cook:0, servings:'6 servings', servingsCount:6,
+  tags:['No-Bake','Quick','Oil-Free'],
+  description:"Blended chickpeas make this cookie dough completely safe to eat raw — creamy, protein-packed, and studded with chocolate chips. Ready in five minutes flat.",
+  ingredients:["1½ cups canned chickpeas, drained and rinsed","1/2 cup natural peanut butter","3-4 pitted dates, or a few drops of stevia","1 tsp vanilla extract","1 tbsp gluten-free oats","1/2 cup unsweetened or stevia-sweetened dark chocolate chips"],
+  steps:["Drain and rinse the chickpeas well.","Add the chickpeas, peanut butter, dates (or stevia), vanilla, and oats to a food processor. Process until completely smooth, scraping down the sides as needed.","Transfer to a bowl and fold in the chocolate chips.","Enjoy right away, or chill overnight — it's even better the next day."]
+},
+{
+  id:'no-bake-brownies', category:'dessert',
+  title:'No-Bake Date Brownies',
+  image:'https://detoxinista.com/wp-content/uploads/2017/10/healthy-brownies-no-sugar.jpg',
+  source:{name:'Detoxinista', url:'https://detoxinista.com/no-bake-brownies-date-sweetened/'},
+  rating:4.7, reviews:18, prep:15, cook:0, servings:'20 brownies', servingsCount:20,
+  tags:['No-Bake','Date-Sweetened','No Added Sugar','Freezer-Friendly'],
+  description:"100% fruit-sweetened, no-bake brownies made from just dates, almond flour, and cacao — pressed into a pan and topped with a quick fudgy frosting. The recipe includes an oil-free frosting option.",
+  nutrition:{cal:92, p:2, c:13, f:4, fi:2, source:'as published by Detoxinista'},
+  ingredients:["1½ cups pitted dates (about 12 oz)","1 cup almond flour","6 tbsp cacao powder","1/4 tsp fine sea salt","1/2 tsp vanilla extract","— for the frosting —","3 tbsp cacao powder","2 tbsp almond butter, plus 1 extra tbsp for an oil-free version","1-2 tsp water, if needed to thin","1 tbsp coconut oil, melted (optional — omit and use extra almond butter to keep it oil-free)"],
+  steps:["Process the dates in a food processor until crumbly (it's fine if a ball starts to form).","Add the almond flour, cacao powder, salt, and vanilla, and process again until a sticky, relatively smooth batter forms.","Line a pan with parchment paper (a loaf pan for thick brownies, or an 8-inch square pan for thinner ones). Press the mixture evenly into the pan and freeze while you make the frosting.","For the frosting, stir together the cacao powder, almond butter (and coconut oil, if using) until thick and smooth, thinning with a teaspoon of water if needed.","Spread the frosting over the chilled base, then freeze for at least 20 more minutes before slicing. Store in the fridge for up to 2 weeks."]
+},
+{
+  id:'blueberry-smoothie', category:'drinks',
+  title:'Low Sugar Blueberry Smoothie',
+  image:'https://detoxinista.com/wp-content/uploads/2018/01/raspberry-smoothie-low-sugar.jpg',
+  source:{name:'Detoxinista', url:'https://detoxinista.com/low-sugar-smoothie/'},
+  rating:4.9, reviews:111, prep:5, cook:0, servings:'2 servings', servingsCount:2,
+  tags:['Quick','No Added Sugar','Oil-Free'],
+  description:"Frozen cauliflower and avocado make this smoothie creamy without extra fruit or sugar — just 12 grams of naturally-occurring sugar per glass.",
+  nutrition:{cal:133, p:3, c:24, f:4, fi:6, source:'as published by Detoxinista'},
+  ingredients:["1 cup fresh or frozen wild blueberries","1/2 banana","1 cup frozen cauliflower florets","1/4 avocado","1 cup water, plus more as needed","1 tbsp lemon juice"],
+  steps:["Combine all of the ingredients in a high-speed blender.","Blend until smooth and creamy, adding more water as needed to reach your preferred consistency.","Serve immediately."]
+},
+{
+  id:'raspberry-smoothie', category:'drinks',
+  title:'Low Sugar Raspberry Smoothie',
+  image:'https://detoxinista.com/wp-content/uploads/2018/01/raspberry-smoothie-low-sugar-468x468.jpg',
+  source:{name:'Detoxinista', url:'https://detoxinista.com/low-sugar-smoothie/'},
+  rating:4.9, reviews:111, prep:5, cook:0, servings:'2 servings', servingsCount:2,
+  tags:['Quick','No Added Sugar','Oil-Free'],
+  description:"A bright, tangy berry smoothie bulked up with cauliflower and avocado instead of extra fruit — creamy with no added sweetener at all.",
+  nutrition:{cal:112, p:2, c:19, f:4, fi:6, source:'as published by Detoxinista'},
+  ingredients:["1 cup frozen strawberries","1/2 cup frozen raspberries","1/2 cup pineapple chunks","1/4 avocado","1 cup frozen cauliflower florets","1 cup water, plus more as needed"],
+  steps:["Combine all of the ingredients in a high-speed blender.","Blend until smooth, adding more water as needed to help it blend.","Serve right away."]
+},
+{
+  id:'detox-veggie-soup', category:'main',
+  title:'Ultimate Vegetable Detox Soup',
+  image:'https://www.mydarlingvegan.com/wp-content/uploads/2020/12/Detox-Soup4-683x1024.jpg',
+  source:{name:'My Darling Vegan', url:'https://www.mydarlingvegan.com/detox-soup/'},
+  rating:4.8, reviews:0, prep:10, cook:20, servings:'4 servings', servingsCount:4,
+  tags:['One-Pot','Freezer-Friendly','Oil-Free'],
+  description:"A hearty, warming soup built on ginger, turmeric, cauliflower, and spinach. The original recipe includes a simple oil-free swap, used here.",
+  ingredients:["1 tbsp water (in place of the oil, for an oil-free version)","1 cup diced yellow onion","2 cloves garlic, minced","1 tbsp fresh ginger, grated","2 stalks celery, chopped","1 large carrot, peeled and chopped","1 small head cauliflower, cut into small florets (about 4 cups)","1 tbsp ground turmeric","1/4 tsp cayenne pepper","6 cups vegetable broth","1 (15 oz) can diced tomatoes","1 (15 oz) can chickpeas, drained and rinsed","1 tsp salt","1/2 tsp black pepper","2 large handfuls fresh spinach","Juice of 1 lemon"],
+  steps:["In a large soup pot, warm the water over medium heat. Add the onion, garlic, and ginger, and sauté about 5 minutes until fragrant.","Add the celery, carrot, and cauliflower, and sauté 5 more minutes until slightly tender.","Stir in the turmeric and cayenne to coat the vegetables.","Add the vegetable broth, tomatoes, and chickpeas. Bring to a boil, then reduce to a simmer, cover, and cook about 20 minutes until the cauliflower is fully tender.","Remove from heat and stir in the spinach so it wilts, along with the lemon juice. Season with salt and pepper, let cool 10 minutes, and serve."]
+},
+{
+  id:'red-lentil-sweet-potato-stew', category:'main',
+  title:'Red Lentil and Sweet Potato Stew',
+  image:'https://www.thegardengrazer.com/wp-content/uploads/2015/01/red-lentil-stew-cover-75.jpg',
+  source:{name:'The Garden Grazer', url:'https://www.thegardengrazer.com/red-lentil-stew/'},
+  rating:4.8, reviews:0, prep:25, cook:20, servings:'6 servings', servingsCount:6,
+  tags:['One-Pot','Oil-Free','High-Protein','Freezer-Friendly'],
+  description:"A cozy, protein-rich stew that turns just nine pantry staples into something deeply comforting. Red lentils break down as they simmer, giving the broth a naturally thick, stew-like body, while sweet potato and smoked paprika add warmth and a hint of sweetness.",
+  ingredients:["1 yellow onion, diced","3 medium carrots, diced","1 large sweet potato, peeled and diced","3-4 cloves garlic, minced","15 oz. can diced tomatoes (or fire-roasted)","1 1/2 cups split red lentils, rinsed","6 cups vegetable broth","2 tsp ground cumin","1 1/2 tsp smoked paprika","1 cup spinach or other greens, roughly chopped (optional)","Salt and pepper, to taste"],
+  steps:["In a large stockpot over medium-high heat, sauté the diced onion and carrot for about 7 minutes, using a few tablespoons of water or broth in place of oil and adding more liquid as needed to prevent sticking.","While the vegetables cook, mince the garlic and peel and dice the sweet potato.","Once the onion turns translucent, stir in the cumin, smoked paprika, and garlic, and cook for 1 minute, adding a splash more liquid if the pan dries out.","Add the sweet potato and cook, stirring, for 2 minutes.","Pour in the diced tomatoes and vegetable broth, then stir in the rinsed lentils.","Bring to a light boil, cover, reduce the heat to medium-low, and simmer for about 20 minutes, until the lentils and sweet potato are tender.","If using, stir in the chopped spinach during the last couple of minutes so it wilts. Season with salt and pepper before serving."]
+},
+{
+  id:'oil-free-chana-masala', category:'main',
+  title:'Vegan Oil-Free Chana Masala',
+  image:'https://www.healthyvegan.com/media/W1siZiIsIjM5OC9IZWFsdGh5LVZlZ2FuLUNoYW5hLU1hc2FsYS0zLmpwZyJdLFsicCIsInRodW1iIiwiMTM1MHgiLHsiZm9ybWF0IjpudWxsfV0sWyJwIiwid2F0ZXJtYXJrIl1d/Healthy-Vegan-Chana-Masala-3.jpg',
+  source:{name:'Healthy Vegan with Colleen Holland', url:'https://www.healthyvegan.com/2023/8/vegan-oil-free-indian-chana-masala'},
+  rating:4.6, reviews:0, prep:10, cook:20, servings:'4 servings', servingsCount:4,
+  tags:['Oil-Free','High-Protein','Quick'],
+  description:"A fast, fully oil-free take on the classic North Indian chickpea curry. Tahini is stirred in to give the tomato-based sauce a bit of richness in place of the oil most restaurant versions rely on, while garam masala, turmeric, and cumin do the flavor work.",
+  ingredients:["2 cups water, divided","4 cloves garlic, minced","1 onion, chopped","1 tsp fresh ginger, minced","1 (15 oz) can crushed tomatoes","1 tbsp tahini","2 tsp turmeric powder","2 tsp garam masala","2 tsp ground cumin","1 1/4 tsp sea salt","1/4 tsp cayenne powder","2 (15 oz) cans chickpeas, drained and rinsed","1 tbsp fresh lemon juice","1/4 cup chopped fresh cilantro"],
+  steps:["Heat 1/2 cup of the water in a large pot over medium heat. Add the garlic, onion, and ginger, and cook about 5 minutes until the onion is translucent and fragrant.","Add the remaining 1 1/2 cups water along with the crushed tomatoes, tahini, turmeric, garam masala, cumin, salt, and cayenne. Stir until the tahini is fully incorporated.","Add the chickpeas and cook for 10 minutes, stirring occasionally.","Remove from the heat and stir in the lemon juice.","Divide among bowls and top with the chopped cilantro. Serve over rice or quinoa, or with a side of steamed greens."]
+},
+{
+  id:'sugar-free-overnight-oats', category:'breakfast',
+  title:'Sugar-Free Overnight Oats',
+  image:'https://dreenaburton.com/wp-content/uploads/2021/06/No-Cook-Oats_1-scaled.jpeg',
+  source:{name:'Dreena Burton', url:'https://dreenaburton.com/sugar-free-overnight-oats/'},
+  rating:4.7, reviews:0, prep:5, cook:0, servings:'2 servings', servingsCount:2,
+  tags:['No-Cook','Make-Ahead','No Added Sugar','Oil-Free'],
+  description:"A simple, muesli-style overnight oat recipe with no added sweetener at all — chopped dates provide the sweetness naturally as everything soaks together in the fridge. Use certified gluten-free oats to keep this GF, and any unsweetened plant milk to keep it dairy-free.",
+  ingredients:["1 cup rolled oats (gluten-free if needed)","1/4 cup finely chopped dates (or chopped apricots or raisins)","1-2 tsp chia seeds","1/4 rounded tsp cinnamon","1/8-1/4 tsp freshly grated nutmeg","Pinch of sea salt","1 1/4 cups unsweetened non-dairy milk"],
+  steps:["In a bowl or jar, combine the rolled oats, chopped dates, chia seeds, cinnamon, nutmeg, salt, and non-dairy milk.","Stir well to combine everything evenly.","Cover and refrigerate overnight. The oats will absorb much of the milk as they sit.","In the morning, stir in a splash more milk if you'd like a thinner texture, then top with fresh fruit, nuts, or seeds as desired."]
+},
+{
+  id:'wfpb-oil-free-brownies', category:'dessert',
+  title:'Vegan Oil-Free WFPB Brownies',
+  image:'https://atelizabethstable.com/wp-content/uploads/2023/07/Vegan-Oil-Free-Brownies-19.jpg',
+  source:{name:"At Elizabeth's Table", url:'https://atelizabethstable.com/vegan-oil-free-brownies-wfpb/'},
+  rating:4.7, reviews:0, prep:10, cook:35, servings:'16 brownies', servingsCount:16,
+  tags:['Oil-Free','One-Bowl'],
+  description:"Rich, fudgy brownies made with just seven whole-food ingredients and no oil, refined sugar, or dairy. Naturally gluten-free oat flour keeps the crumb tender, while maple syrup and nut butter stand in for butter and sugar. Choose unsweetened chocolate chips to keep it fully refined-sugar-free, or swap in date syrup for the maple.",
+  ingredients:["1 cup maple syrup (or date syrup for a fully fruit-sweetened version)","1 cup neutral nut butter, such as cashew or almond","1 tbsp vanilla extract","3/4 cup cocoa powder","1 tbsp espresso powder (optional)","3/4 tsp salt","1/4 cup oat flour (certified gluten-free if needed)","1/2 cup unsweetened dairy-free chocolate chips"],
+  steps:["Preheat the oven to 350°F. Line an 8x8-inch baking pan with parchment paper.","In a large bowl, whisk together the maple syrup, nut butter, and vanilla until smooth.","Add the cocoa powder, espresso powder, and salt, and whisk to combine.","Stir in the oat flour. The batter will be quite thick — just stir it in as best you can.","Fold in the chocolate chips.","Spread the batter into the prepared pan and top with a few extra chocolate chips if you like.","Bake for 35-40 minutes, until a toothpick inserted in the center comes out mostly clean. Let cool 10-15 minutes before slicing."]
+},
+{
+  id:'veggie-rice-soup', category:'main',
+  title:'One-Pot Vegetable & Rice Soup',
+  image:'https://www.thegardengrazer.com/wp-content/uploads/2012/11/vegetable-barley-soup-cover-75.jpg',
+  source:{name:'The Garden Grazer', url:'https://www.thegardengrazer.com/vegetable-barley-soup/'},
+  rating:4.7, reviews:0, prep:15, cook:45, servings:'6 servings', servingsCount:6,
+  tags:['One-Pot','Oil-Free','Freezer-Friendly'],
+  description:"A cozy, pantry-friendly vegetable soup built on a garlicky tomato broth with a recommended miso stir-in for extra umami. The original recipe is built around barley; this version swaps in brown rice so it stays gluten-free, per the source's own suggested GF substitution.",
+  ingredients:["1 yellow onion, diced","2 medium carrots, diced","4 cloves garlic, minced","6 cups vegetable broth","15 oz. can diced tomatoes","3/4 cup brown rice (in place of barley, for a gluten-free version)","1 1/2 cups cut green beans, fresh or frozen","1 cup sweet corn, fresh or frozen","1 cup peas, fresh or frozen","1 tsp dried basil","1/2 tsp dried oregano","1 tbsp white miso, whisked with 1/3 cup warm water (optional)","Fresh parsley, for garnish"],
+  steps:["In a large stockpot over medium-high heat, sauté the diced onion for 7-8 minutes, using a few tablespoons of water or broth in place of oil and adding more as needed.","Meanwhile, dice the carrot and mince the garlic.","Once the onion is translucent, add the carrot, garlic, basil, and oregano, and sauté for 1 minute.","Add the broth, tomatoes, rice, green beans, corn, and peas. Increase the heat and bring to a light boil, then stir and reduce to medium-low.","Cover and simmer until the rice is tender, about 35-40 minutes, stirring occasionally.","If using, whisk the miso with the warm water in a small bowl, then stir the slurry into the pot at the end of cooking. Otherwise, season with salt and pepper to taste.","Serve topped with chopped parsley."]
+},
+{
+  id:'fiesta-three-bean-chili', category:'main',
+  title:'Fiesta Three Bean Chili',
+  image:'https://www.thegardengrazer.com/wp-content/uploads/2016/10/three-bean-chili-cover-75-1.jpg',
+  source:{name:'The Garden Grazer', url:'https://www.thegardengrazer.com/three-bean-fiesta-chili/'},
+  rating:4.8, reviews:0, prep:20, cook:25, servings:'5 servings', servingsCount:5,
+  tags:['One-Pot','Oil-Free','High-Protein','Freezer-Friendly'],
+  description:"A colorful, Mexican-inspired chili built on a trio of black, pinto, and kidney beans for hearty plant protein. Bell peppers and sweet corn add freshness, while chili powder, cumin, and smoked paprika bring warmth to the broth.",
+  ingredients:["1 yellow onion, diced","2 bell peppers (one green, one red), diced","4 cloves garlic, minced","15 oz. can black beans, drained and rinsed","15 oz. can pinto beans, drained and rinsed","15 oz. can kidney beans, drained and rinsed","15 oz. can diced tomatoes, with juice","3 cups vegetable broth","1 cup sweet corn, fresh, frozen, or canned","1 1/3 tbsp chili powder","2 tsp ground cumin","1 tsp smoked paprika","Salt and pepper, to taste","Optional toppings: avocado, cilantro, green onion, hot sauce, dairy-free sour cream, crushed tortilla chips"],
+  steps:["In a large stockpot over medium-high heat, sauté the diced onion for 7-8 minutes, using a few tablespoons of water or broth in place of oil and adding more liquid as needed.","While the onion cooks, dice the bell peppers and mince the garlic.","Once the onion is translucent, add the bell peppers, garlic, chili powder, cumin, and smoked paprika. Stir and sauté for 2 minutes.","Add the vegetable broth and diced tomatoes with their juice.","Stir in the drained black, pinto, and kidney beans.","Increase the heat and bring to a light boil, then cover, reduce the heat, and simmer for about 25 minutes.","Stir in the sweet corn during the last 5 minutes of cooking (no need to thaw if frozen).","Season with salt and pepper to taste, and serve with your favorite toppings."]
+},
+{
+  id:'miso-tahini-dressing', category:'sides',
+  title:'Creamy Miso Tahini Dressing',
+  image:'https://www.thegardengrazer.com/wp-content/uploads/2024/05/miso-tahini-dressing-cover-75-2.jpg',
+  source:{name:'The Garden Grazer', url:'https://www.thegardengrazer.com/miso-tahini-dressing/'},
+  rating:4.8, reviews:0, prep:5, cook:0, servings:'4 servings', servingsCount:4,
+  tags:['No-Bake','Quick','Oil-Free'],
+  description:"An ultra-creamy, five-ingredient dressing that gets its richness from tahini and its savory depth from white miso, with fresh lemon juice and rice vinegar for brightness. Great drizzled over salads, grain bowls, or roasted vegetables, or thickened up as a dip.",
+  ingredients:["2 tbsp white miso","2 tbsp tahini","3 tbsp fresh lemon juice","2 tbsp unseasoned rice vinegar","2 tsp pure maple syrup","1 tbsp water, if needed to thin"],
+  steps:["Place the miso, tahini, lemon juice, rice vinegar, and maple syrup in a small high-speed blender.","Blend for 20-30 seconds, until smooth and creamy.","Check the consistency, which will vary depending on how thick your tahini is. Blend in a splash of water or extra lemon juice if you'd like it thinner.","Taste and adjust the flavors as needed. Store in a sealed jar in the fridge for up to 5-6 days."]
+},
+{
+  id:'raspberry-bliss-balls', category:'snacks',
+  title:'Raspberry Bliss Balls',
+  image:'https://monkeyandmekitchenadventures.com/wp-content/uploads/2025/01/Raspberry-Bliss-Balls_04.jpg',
+  source:{name:'Monkey and Me Kitchen Adventures', url:'https://monkeyandmekitchenadventures.com/raspberry-bliss-balls/'},
+  rating:4.8, reviews:0, prep:20, cook:0, servings:'15 balls', servingsCount:15,
+  tags:['No-Bake','Oil-Free','Freezer-Friendly','Make-Ahead'],
+  description:"Vibrant, tart-sweet energy bites made from freeze-dried raspberries, Medjool dates, and cashew butter, with shredded coconut for texture. No oil and no baking required — just a food processor and a little chill time.",
+  ingredients:["1.2 oz. package freeze-dried whole raspberries (about 1 1/2 cups)","7 Medjool dates, pitted","3 tbsp cashew butter (raw, unsalted, unsweetened)","1/4 cup unsweetened shredded coconut","2 tbsp pure maple syrup (or a few drops of stevia)","1 tsp vanilla extract","1 tsp hot water, plus more as needed","Pinch of sea salt","1/4-1/2 cup unsweetened shredded coconut, for optional coating","1 tsp crushed freeze-dried raspberry dust, for optional coating"],
+  steps:["Place the Medjool dates in a food processor and process for 30-45 seconds, until finely chopped.","Add the freeze-dried raspberries to the processor with the dates and process for about 30 seconds, until they break down into a powder-like consistency.","Add the cashew butter, shredded coconut, sweetener, vanilla, hot water, and salt. Process until the mixture comes together.","Pinch a bit of the mixture to test — it should hold together easily. If too dry, add another 1/2 to 1 teaspoon of hot water and process again; if too wet, add a bit more shredded coconut.","Scoop about 1 tablespoon of the mixture at a time and roll into firm balls, setting each on a parchment-lined plate.","If desired, stir together the optional shredded coconut and crushed raspberry dust in a small bowl, then roll the balls in the mixture to coat.","Freeze for 30 minutes, or until firm, then transfer to an airtight container and store in the refrigerator."]
+}
+];
+
+/* =========================================================
+   NUTRITION ESTIMATOR (approximate, per-100g database)
+========================================================= */
+const NUTRI_DB = {
+ "gluten-free rolled oats":{cal:389,p:17,c:66,f:7,fi:10},"gluten-free quick oats":{cal:389,p:17,c:66,f:7,fi:10},"rolled oats":{cal:389,p:17,c:66,f:7,fi:10},"oat flour":{cal:389,p:17,c:66,f:7,fi:10},"oats":{cal:389,p:17,c:66,f:7,fi:10},
+ "banana":{cal:89,p:1.1,c:23,f:0.3,fi:2.6}, "applesauce":{cal:45,p:0.2,c:11,f:0.1,fi:1.2},
+ "plant milk":{cal:15,p:0.6,c:0.6,f:1.2,fi:0.3}, "almond milk":{cal:15,p:0.6,c:0.6,f:1.2,fi:0.3}, "coconut milk":{cal:230,p:2.3,c:6,f:24,fi:2.2},
+ "vanilla extract":{cal:288,p:0.1,c:12.7,f:0.1,fi:0}, "apple cider vinegar":{cal:22,p:0,c:0.9,f:0,fi:0}, "vinegar":{cal:22,p:0,c:0.9,f:0,fi:0}, "red wine vinegar":{cal:19,p:0,c:0.3,f:0,fi:0}, "white vinegar":{cal:3,p:0,c:0.1,f:0,fi:0},
+ "walnuts":{cal:654,p:15,c:14,f:65,fi:6.7}, "almonds":{cal:579,p:21,c:22,f:50,fi:12.5}, "sliced almonds":{cal:579,p:21,c:22,f:50,fi:12.5}, "pistachios":{cal:560,p:20,c:28,f:45,fi:10},
+ "pumpkin seeds":{cal:559,p:30,c:11,f:49,fi:6}, "pepita seeds":{cal:559,p:30,c:11,f:49,fi:6}, "chia seeds":{cal:486,p:17,c:42,f:31,fi:34}, "sunflower seeds":{cal:584,p:21,c:20,f:51,fi:8.6},
+ "flax seeds":{cal:534,p:18,c:29,f:42,fi:27}, "hemp hearts":{cal:553,p:31,c:8.7,f:49,fi:4},
+ "medjool dates":{cal:277,p:1.8,c:75,f:0.2,fi:6.7}, "dates":{cal:277,p:1.8,c:75,f:0.2,fi:6.7}, "date sugar":{cal:325,p:0,c:97,f:0,fi:8}, "date paste":{cal:280,p:2,c:74,f:0.3,fi:7},
+ "dried blueberries":{cal:317,p:2.6,c:80,f:1.3,fi:8}, "dried cranberries":{cal:308,p:0.1,c:82,f:1.1,fi:5.7}, "dried cherries":{cal:325,p:2,c:85,f:1,fi:4},
+ "almond butter":{cal:614,p:21,c:19,f:56,fi:10}, "peanut butter":{cal:588,p:25,c:20,f:50,fi:6}, "maple syrup":{cal:260,p:0,c:67,f:0.2,fi:0}, "coconut oil":{cal:862,p:0,c:0,f:100,fi:0},
+ "cinnamon":{cal:247,p:4,c:81,f:1.2,fi:53}, "nutmeg":{cal:525,p:6,c:49,f:36,fi:21}, "salt":{cal:0,p:0,c:0,f:0,fi:0}, "sea salt":{cal:0,p:0,c:0,f:0,fi:0},
+ "chickpeas":{cal:139,p:7.3,c:22.5,f:2.1,fi:7}, "black beans":{cal:130,p:8.9,c:23,f:0.5,fi:8.7}, "green lentils":{cal:116,p:9,c:20,f:0.4,fi:7.9}, "lentils":{cal:116,p:9,c:20,f:0.4,fi:7.9},
+ "garlic powder":{cal:331,p:17,c:73,f:0.7,fi:9}, "parsley":{cal:36,p:3,c:6.3,f:0.8,fi:3.3}, "parsley flakes":{cal:292,p:22,c:56,f:4.4,fi:26},
+ "bell pepper":{cal:31,p:1,c:6,f:0.3,fi:2.1}, "onion":{cal:40,p:1.1,c:9.3,f:0.1,fi:1.7}, "garlic":{cal:149,p:6.4,c:33,f:0.5,fi:2.1}, "garlic cloves":{cal:149,p:6.4,c:33,f:0.5,fi:2.1},
+ "crushed tomatoes":{cal:32,p:1.6,c:7,f:0.2,fi:1.5}, "tomatoes":{cal:32,p:1.6,c:7,f:0.2,fi:1.5},
+ "vegetable broth":{cal:3,p:0.2,c:0.6,f:0.1,fi:0}, "vegetable stock":{cal:3,p:0.2,c:0.6,f:0.1,fi:0}, "water":{cal:0,p:0,c:0,f:0,fi:0},
+ "cumin":{cal:375,p:18,c:44,f:22,fi:11}, "chili powder":{cal:282,p:13,c:50,f:14,fi:35}, "cayenne pepper":{cal:318,p:12,c:57,f:17,fi:27}, "turmeric":{cal:312,p:9.7,c:65,f:3.3,fi:21}, "fenugreek":{cal:323,p:23,c:58,f:6.4,fi:25}, "garam masala":{cal:379,p:15,c:64,f:15,fi:21}, "ginger":{cal:80,p:1.8,c:18,f:0.8,fi:2},
+ "corn":{cal:96,p:3.4,c:21,f:1.5,fi:2.4}, "cilantro":{cal:23,p:2.1,c:3.7,f:0.5,fi:2.8}, "spinach":{cal:23,p:2.9,c:3.6,f:0.4,fi:2.2},
+ "lime":{cal:30,p:0.7,c:11,f:0.2,fi:2.8}, "lemon juice":{cal:22,p:0.4,c:6.9,f:0.2,fi:0.3},
+ "potatoes":{cal:77,p:2,c:17,f:0.1,fi:2.2}, "russet potatoes":{cal:77,p:2,c:17,f:0.1,fi:2.2},
+ "silken tofu":{cal:55,p:5.5,c:2,f:2.7,fi:0.3}, "tofu":{cal:76,p:8,c:1.9,f:4.8,fi:0.3},
+ "dijon mustard":{cal:66,p:4,c:6,f:3.3,fi:3}, "yellow mustard":{cal:66,p:4,c:5,f:3.3,fi:3.3}, "pickle relish":{cal:95,p:0.7,c:23,f:0.3,fi:1},
+ "smoked paprika":{cal:282,p:14,c:54,f:13,fi:35}, "paprika":{cal:282,p:14,c:54,f:13,fi:35}, "black pepper":{cal:251,p:10,c:64,f:3.3,fi:25},
+ "green beans":{cal:31,p:1.8,c:7,f:0.2,fi:2.7}, "tamari":{cal:60,p:8,c:6,f:0.6,fi:0.8}, "soy sauce":{cal:60,p:8,c:6,f:0.6,fi:0.8},
+ "arrowroot powder":{cal:357,p:0.3,c:85,f:0.1,fi:0.9}, "cornstarch":{cal:357,p:0.3,c:85,f:0.1,fi:0.9},
+ "cocoa powder":{cal:228,p:20,c:58,f:14,fi:33}, "cacao powder":{cal:228,p:20,c:58,f:14,fi:33}, "chocolate chips":{cal:546,p:4.9,c:61,f:31,fi:7}, "dark chocolate chips":{cal:546,p:4.9,c:61,f:31,fi:7},
+ "almond flour":{cal:571,p:21,c:20,f:50,fi:10},
+ "cauliflower":{cal:25,p:1.9,c:5,f:0.3,fi:2}, "avocado":{cal:160,p:2,c:8.5,f:15,fi:6.7}, "strawberries":{cal:32,p:0.7,c:7.7,f:0.3,fi:2}, "raspberries":{cal:52,p:1.2,c:12,f:0.7,fi:6.5}, "pineapple":{cal:50,p:0.5,c:13,f:0.1,fi:1.4}, "blueberries":{cal:57,p:0.7,c:14,f:0.3,fi:2.4},
+ "olive oil":{cal:884,p:0,c:0,f:100,fi:0}, "oil":{cal:884,p:0,c:0,f:100,fi:0}, "stevia":{cal:0,p:0,c:0,f:0,fi:0}
+};
+const WHOLE_ITEM_G = {"banana":118,"lime":67,"lemon":58,"avocado":170,"onion":110,"potatoes":170,"russet potatoes":170,"bell pepper":120,"garlic cloves":3,"garlic":3};
+const UNIT_G = {"cup":120,"cups":120,"tbsp":15,"tablespoon":15,"tablespoons":15,"tsp":5,"teaspoon":5,"teaspoons":5,"oz":28,"ounce":28,"ounces":28,"lb":454,"lbs":454,"pound":454,"g":1,"gram":1,"grams":1,"kg":1000,"ml":1,"l":1000,"can":240,"cans":240,"clove":3,"cloves":3,"pinch":0.3,"pinches":0.3,"handful":15};
+
+function parseQtyToken(tok){
+  if(!tok) return null;
+  tok = tok.trim();
+  const fracMap = {'½':0.5,'¼':0.25,'¾':0.75,'⅓':0.333,'⅔':0.667,'⅛':0.125};
+  let total = 0, found=false;
+  const parts = tok.split(/\s+/);
+  for(const p of parts){
+    if(fracMap[p]!==undefined){ total += fracMap[p]; found=true; continue; }
+    if(/^\d+\/\d+$/.test(p)){ const [a,b]=p.split('/').map(Number); total += a/b; found=true; continue; }
+    if(/^\d+(\.\d+)?$/.test(p)){ total += parseFloat(p); found=true; continue; }
+    // number+glued fraction like "1½"
+    const m = p.match(/^(\d+)?([½¼¾⅓⅔⅛])$/);
+    if(m){ total += (m[1]?parseInt(m[1]):0) + fracMap[m[2]]; found=true; continue; }
+  }
+  return found ? total : null;
+}
+
+function estimateNutrition(recipe){
+  if(recipe.nutrition) return {cal:recipe.nutrition.cal,p:recipe.nutrition.p,c:recipe.nutrition.c,f:recipe.nutrition.f,fi:recipe.nutrition.fi, source:recipe.nutrition.source};
+  const dbKeys = Object.keys(NUTRI_DB).sort((a,b)=>b.length-a.length);
+  let totals = {cal:0,p:0,c:0,f:0,fi:0};
+  (recipe.ingredients||[]).forEach(line=>{
+    if(!line || line.startsWith('—')) return;
+    const lower = line.toLowerCase();
+    // find matching db ingredient (longest match first)
+    let matchKey = null;
+    for(const k of dbKeys){ if(lower.includes(k)){ matchKey = k; break; } }
+    if(!matchKey) return;
+    const vals = NUTRI_DB[matchKey];
+    // extract leading quantity + unit
+    const m = lower.match(/^([\d.\/½¼¾⅓⅔⅛\s]+)?\s*([a-z]+)?/);
+    let qty = m ? parseQtyToken(m[1]) : null;
+    let unitWord = m && m[2] ? m[2].replace(/[^a-z]/g,'') : null;
+    let grams;
+    if(unitWord && UNIT_G[unitWord] !== undefined){
+      grams = (qty || 1) * UNIT_G[unitWord];
+    } else if(WHOLE_ITEM_G[matchKey] !== undefined){
+      grams = (qty || 1) * WHOLE_ITEM_G[matchKey];
+    } else if(qty){
+      grams = qty * 100; // best guess fallback
+    } else {
+      grams = 60; // small unspecified amount fallback
+    }
+    const scale = grams/100;
+    totals.cal += vals.cal*scale; totals.p += vals.p*scale; totals.c += vals.c*scale; totals.f += vals.f*scale; totals.fi += vals.fi*scale;
+  });
+  const n = Math.max(recipe.servingsCount||1,1);
+  return {
+    cal: Math.round(totals.cal/n), p: Math.round((totals.p/n)*10)/10,
+    c: Math.round((totals.c/n)*10)/10, f: Math.round((totals.f/n)*10)/10, fi: Math.round((totals.fi/n)*10)/10,
+    source:'estimated automatically from the ingredient list'
+  };
+}
+
+/* =========================================================
+   STORAGE HELPERS
+========================================================= */
+/* Uses the browser's own localStorage, so this site works fully standalone
+   once hosted anywhere (GitHub Pages, Netlify, etc) — no Claude.ai connection needed.
+   Data is saved per-browser, per-device. */
+const LS_PREFIX = 'emilys-recipes:';
+async function getFavorites(){ try{ const v = localStorage.getItem(LS_PREFIX+'favorites'); return v ? JSON.parse(v) : []; }catch(e){ return []; } }
+async function setFavorites(arr){ try{ localStorage.setItem(LS_PREFIX+'favorites', JSON.stringify(arr)); }catch(e){} }
+async function toggleFavorite(id){ const favs = await getFavorites(); const idx = favs.indexOf(id); if(idx>-1) favs.splice(idx,1); else favs.push(id); await setFavorites(favs); return favs; }
+async function getNote(id){ try{ const v = localStorage.getItem(LS_PREFIX+'note-'+id); return v || ''; }catch(e){ return ''; } }
+async function saveNote(id, text){ try{ localStorage.setItem(LS_PREFIX+'note-'+id, text); return true; }catch(e){ return false; } }
+async function getCustomRecipes(){ try{ const v = localStorage.getItem(LS_PREFIX+'custom-recipes'); return v ? JSON.parse(v) : []; }catch(e){ return []; } }
+async function saveCustomRecipes(arr){ try{ localStorage.setItem(LS_PREFIX+'custom-recipes', JSON.stringify(arr)); return true; }catch(e){ return false; } }
+
+let CUSTOM_RECIPES = [];
+function allRecipes(){ return BUILT_IN_RECIPES.concat(CUSTOM_RECIPES); }
+
+/* =========================================================
+   ROUTER / STATE
+========================================================= */
+let state = { route:'home', categoryId:null, recipeId:null, query:'', activeTags:new Set() };
+let wakeLock = null;
+
+function navigate(route, param){
+  state.route = route;
+  state.categoryId = route==='category' ? param : null;
+  state.recipeId = route==='recipe' ? param : null;
+  window.scrollTo(0,0);
+  render();
+}
+function onSearchInput(v){ state.query = v; if(state.route!=='search') state.route='search'; render(); }
+function toggleTag(tag){ if(state.activeTags.has(tag)) state.activeTags.delete(tag); else state.activeTags.add(tag); if(state.route!=='search' && state.activeTags.size>0) state.route='search'; render(); }
+function matchesQuery(r, q){ if(!q) return true; q = q.toLowerCase(); const hay = [r.title, r.description, ...(r.ingredients||[]), ...(r.tags||[])].join(' ').toLowerCase(); return hay.includes(q); }
+function matchesTags(r){ if(state.activeTags.size===0) return true; for(const t of state.activeTags){ if(!r.tags.includes(t)) return false; } return true; }
+function esc(s){ return (s+'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderFilterRow(){
+  document.getElementById('filter-row').innerHTML = ALL_TAGS.map(t=>`<button class="chip ${state.activeTags.has(t)?'active':''}" onclick="toggleTag('${t}')">${t}</button>`).join('');
+}
+let favoritesCache = [];
+async function refreshFavCache(){ favoritesCache = await getFavorites(); }
+
+function recipeCard(r){
+  const isFav = favoritesCache.includes(r.id);
+  const catInfo = CATEGORIES.find(c=>c.id===r.category);
+  return `
+  <div class="card" onclick="navigate('recipe','${r.id}')">
+    ${imgTag(r.image, r.title, 'thumb')}
+    <button class="fav-btn" onclick="event.stopPropagation(); onCardFavClick('${r.id}')">${isFav?'💗':'🤍'}</button>
+    <div class="body">
+      <div class="cat-tag">${catInfo?catInfo.label:r.category}</div>
+      <h3>${esc(r.title)}</h3>
+      <div class="meta"><span>⭐ ${r.rating}</span><span>·</span><span>${r.prep+r.cook} min</span><span>·</span><span>${esc(r.servings)}</span></div>
+      <div class="tagrow">${r.tags.slice(0,3).map(t=>`<span>${t}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+async function onCardFavClick(id){ favoritesCache = await toggleFavorite(id); render(); }
+
+/* =========================================================
+   RENDER: pages
+========================================================= */
+function renderHome(){
+  return `
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Welcome back, <em>Emily</em> 🌷</h1>
+      <p>Every recipe here is whole-food plant-based, gluten-free, and dairy-free, with no refined sugar. Pick a category, or search for anything you're craving.</p>
+    </div>
+  </div>
+  <div class="home-layout">
+    <div class="icon-shelf">
+      <div class="icon-rail">
+        ${CATEGORIES.map(c=>`
+          <div class="cat-icon" onclick="navigate('${c.id==='favorites'?'favorites':(c.id==='add'?'add':'category')}','${c.id}')">
+            <div class="swatch ${c.swatch}">${c.icon}</div>
+            <div>
+              <div class="label">${c.label}</div>
+              <div class="sub">${c.sub}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="home-right">
+      <div class="section-title"><h2>All recipes</h2></div>
+      <div class="grid">${allRecipes().map(recipeCard).join('')}</div>
+    </div>
+  </div>
+  <div class="footer-note">Made with love for Emily's kitchen · no ads, ever 🌿</div>
+  `;
+}
+
+function renderCategory(catId){
+  const cat = CATEGORIES.find(c=>c.id===catId);
+  const list = allRecipes().filter(r=>r.category===catId);
+  return `
+  <div class="back-link" onclick="navigate('home')">← Back home</div>
+  <div class="cat-header">
+    <div class="swatch ${cat.swatch}">${cat.icon}</div>
+    <div><h1>${cat.label}</h1><div style="color:var(--ink-soft); font-size:14px; font-weight:600;">${list.length} recipe${list.length!==1?'s':''}</div></div>
+  </div>
+  ${list.length ? `<div class="grid">${list.map(recipeCard).join('')}</div>` :
+    `<div class="empty"><div class="big">🌱</div>No ${cat.label.toLowerCase()} recipes yet — add one with the <strong>＋ Add a Recipe</strong> button!</div>`}
+  `;
+}
+
+async function renderFavorites(){
+  await refreshFavCache();
+  const list = allRecipes().filter(r=>favoritesCache.includes(r.id));
+  document.getElementById('app').innerHTML = `
+    <div class="back-link" onclick="navigate('home')">← Back home</div>
+    <div class="cat-header"><div class="swatch c-favorites">💗</div><div><h1>Favorites</h1><div style="color:var(--ink-soft); font-size:14px; font-weight:600;">${list.length} saved recipe${list.length!==1?'s':''}</div></div></div>
+    ${list.length ? `<div class="grid">${list.map(recipeCard).join('')}</div>` : `<div class="empty"><div class="big">🤍</div>Tap the heart on any recipe to save it here.</div>`}
+  `;
+  document.getElementById('nav-fav').classList.add('active');
+}
+
+function renderSearch(){
+  const results = allRecipes().filter(r=>matchesQuery(r,state.query) && matchesTags(r));
+  return `
+  <div class="cat-header"><div class="swatch c-favorites" style="font-size:22px;">🔍</div>
+    <div><h1>${state.query ? `Results for "${esc(state.query)}"` : 'Browse & filter'}</h1><div style="color:var(--ink-soft); font-size:14px; font-weight:600;">${results.length} recipe${results.length!==1?'s':''} found</div></div>
+  </div>
+  ${results.length ? `<div class="grid">${results.map(recipeCard).join('')}</div>` : `<div class="empty"><div class="big">🌼</div>No recipes match yet — try a different search or filter.</div>`}
+  `;
+}
+
+async function renderRecipe(id){
+  const r = allRecipes().find(x=>x.id===id);
+  if(!r){ navigate('home'); return; }
+  await refreshFavCache();
+  const isFav = favoritesCache.includes(r.id);
+  const note = await getNote(r.id);
+  const cat = CATEGORIES.find(c=>c.id===r.category);
+  const nut = estimateNutrition(r);
+
+  document.getElementById('app').innerHTML = `
+    <div class="back-link" onclick="navigate('category','${r.category}')">← Back to ${cat.label}</div>
+    <div class="recipe-head">
+      <div class="recipe-title-row">
+        <h1>${esc(r.title)}</h1>
+        <button class="heart-btn ${isFav?'is-fav':''}" id="heart-btn" onclick="onRecipeFavClick('${r.id}')">${isFav?'💗':'🤍'}</button>
+      </div>
+      <div class="recipe-meta">
+        <span class="stars">⭐ ${r.rating}</span><span>${r.reviews} review${r.reviews!==1?'s':''}</span><span>·</span>
+        <span>⏱ ${r.prep+r.cook} min total</span><span>·</span><span>${esc(r.servings)}</span>
+      </div>
+      <div class="tagrow" style="margin-top:8px;">${r.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      <div class="source-line">${r.custom ? 'Added by you.' : `Adapted from <a href="${r.source.url}" target="_blank" rel="noopener">${esc(r.source.name)}</a> — full original recipe &amp; step photos at the source link.`}</div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="document.getElementById('recipe-core').scrollIntoView({behavior:'smooth'})">👇 Jump to recipe</button>
+      <button class="btn btn-ghost" onclick="printRecipe('${r.id}')">🖨 Print / Save as PDF</button>
+      ${r.custom ? `<button class="btn btn-danger" onclick="deleteCustomRecipe('${r.id}')">🗑 Delete</button>` : ''}
+      <div class="switch-wrap">
+        <span class="switch-label">Screen always on</span>
+        <button class="switch" id="wake-switch" onclick="toggleWakeLock()"></button>
+      </div>
+    </div>
+    <div class="wake-status" id="wake-status" style="margin-left:4px;"></div>
+
+    <div class="photos">${imgTag(r.image, r.title, '')}</div>
+    <p class="desc">${esc(r.description)}</p>
+
+    <div id="recipe-core" class="core-grid">
+      <div class="panel">
+        <h3>🥣 Ingredients</h3>
+        <ul class="ingredients-list">${r.ingredients.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>
+      </div>
+      <div class="panel">
+        <h3>👩‍🍳 Instructions</h3>
+        <ol class="steps-list">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+      </div>
+    </div>
+
+    <div class="panel nutrition-panel">
+      <h3>🔢 Nutrition <span style="font-weight:500; font-size:12px; color:var(--ink-soft);">(per serving)</span></h3>
+      <div class="nutrition-grid">
+        <div class="nut-cell"><div class="num">${nut.cal}</div><div class="lbl">Calories</div></div>
+        <div class="nut-cell"><div class="num">${nut.p}g</div><div class="lbl">Protein</div></div>
+        <div class="nut-cell"><div class="num">${nut.c}g</div><div class="lbl">Carbs</div></div>
+        <div class="nut-cell"><div class="num">${nut.f}g</div><div class="lbl">Fat</div></div>
+        <div class="nut-cell"><div class="num">${nut.fi}g</div><div class="lbl">Fiber</div></div>
+      </div>
+      <div class="nut-caption">Nutrition ${nut.source}. Values are approximate.</div>
+    </div>
+
+    <div class="panel notes-panel">
+      <h3>📝 Notes</h3>
+      <textarea id="notes-area" placeholder="Jot down swaps, timing tweaks, or how it turned out…">${esc(note)}</textarea>
+      <div class="notes-save-row">
+        <button class="btn btn-primary" onclick="onSaveNote('${r.id}')">Save note</button>
+        <span class="save-status" id="save-status">Saved ✓</span>
+      </div>
+    </div>
+
+    <div class="footer-note">Made with love for Emily's kitchen · no ads, ever 🌿</div>
+  `;
+}
+
+async function onRecipeFavClick(id){
+  favoritesCache = await toggleFavorite(id);
+  const btn = document.getElementById('heart-btn');
+  const isFav = favoritesCache.includes(id);
+  btn.classList.toggle('is-fav', isFav);
+  btn.textContent = isFav ? '💗' : '🤍';
+}
+async function onSaveNote(id){
+  const val = document.getElementById('notes-area').value;
+  const ok = await saveNote(id, val);
+  const status = document.getElementById('save-status');
+  status.textContent = ok ? 'Saved ✓' : 'Could not save';
+  status.classList.add('show');
+  setTimeout(()=>status.classList.remove('show'), 1800);
+}
+async function deleteCustomRecipe(id){
+  if(!confirm('Delete this recipe? This cannot be undone.')) return;
+  CUSTOM_RECIPES = CUSTOM_RECIPES.filter(r=>r.id!==id);
+  await saveCustomRecipes(CUSTOM_RECIPES);
+  navigate('home');
+}
+
+/* ---------- print (opens a clean printable copy in a new tab) ---------- */
+function buildPrintHTML(r, notesText){
+  const nut = estimateNutrition(r);
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(r.title)}</title>
+  <style>
+    body{ font-family: Georgia, 'Times New Roman', serif; color:#2b2233; max-width:720px; margin:40px auto; padding:0 24px; }
+    h1{ font-size:26px; margin-bottom:4px; } .meta{ color:#665f70; font-size:13px; margin-bottom:18px; }
+    h2{ font-size:16px; margin-top:26px; border-bottom:1px solid #ddd; padding-bottom:4px; }
+    ul,ol{ padding-left:20px; line-height:1.6; font-size:14px; }
+    .notes-box{ border:1px solid #ccc; border-radius:8px; padding:14px; white-space:pre-wrap; font-size:13.5px; min-height:60px; margin-top:8px; }
+    .nutrow{ display:flex; gap:18px; flex-wrap:wrap; font-size:13.5px; margin-top:8px; }
+    .nutrow div{ background:#f6f2fa; border-radius:6px; padding:6px 10px; }
+  </style></head><body>
+    <h1>${esc(r.title)}</h1>
+    <div class="meta">⭐ ${r.rating} · ${r.prep+r.cook} min total · ${esc(r.servings)}</div>
+    <h2>Ingredients</h2><ul>${r.ingredients.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>
+    <h2>Instructions</h2><ol>${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+    <h2>Nutrition (per serving, ${esc(nut.source)})</h2>
+    <div class="nutrow"><div>${nut.cal} cal</div><div>${nut.p}g protein</div><div>${nut.c}g carbs</div><div>${nut.f}g fat</div><div>${nut.fi}g fiber</div></div>
+    <h2>Notes</h2><div class="notes-box">${notesText && notesText.trim() ? esc(notesText) : '(no notes added)'}</div>
+    <script>window.onload = function(){ window.print(); };<\/script>
+  </body></html>`;
+}
+function printRecipe(id){
+  const r = allRecipes().find(x=>x.id===id);
+  const notesVal = document.getElementById('notes-area') ? document.getElementById('notes-area').value : '';
+  const html = buildPrintHTML(r, notesVal);
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if(!win){ alert("Your browser blocked the print tab. Please allow pop-ups for this page and try again."); }
+}
+
+/* ---------- wake lock ---------- */
+async function toggleWakeLock(){
+  const btn = document.getElementById('wake-switch');
+  const status = document.getElementById('wake-status');
+  const isOn = btn.classList.contains('on');
+  if(isOn){
+    if(wakeLock){ try{ await wakeLock.release(); }catch(e){} wakeLock=null; }
+    btn.classList.remove('on'); status.textContent = '';
+  } else {
+    try{
+      if(!('wakeLock' in navigator)) throw new Error('unsupported');
+      wakeLock = await navigator.wakeLock.request('screen');
+      btn.classList.add('on'); status.textContent = 'Screen will stay on while cooking';
+      wakeLock.addEventListener('release', ()=>{ btn.classList.remove('on'); status.textContent = ''; });
+    }catch(e){
+      status.textContent = "Couldn't keep the screen on in this browser/tab.";
+    }
+  }
+}
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState==='visible' && document.getElementById('wake-switch')?.classList.contains('on')){
+    try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+  }
+});
+
+/* =========================================================
+   ADD-A-RECIPE PAGE
+========================================================= */
+function renderAddRecipe(){
+  document.getElementById('app').innerHTML = `
+    <div class="back-link" onclick="navigate('home')">← Back home</div>
+    <div class="cat-header"><div class="swatch c-add">＋</div><div><h1>Add a Recipe</h1><div style="color:var(--ink-soft); font-size:14px; font-weight:600;">Paste a recipe, or fill in the fields yourself</div></div></div>
+
+    <div class="paste-box" style="border-color:var(--green-deep); background:linear-gradient(160deg,#f2fbf5,#eef8ff);">
+      <h3>⚡ Bulk import (fastest — add many at once)</h3>
+      <p>Paste a JSON list of recipes here and click "Import all" to add them in one go — this is by far the quickest way to load lots of recipes. Ask Claude to "give me a batch of recipes in the Emily's Recipes JSON format" and paste whatever it gives you right in below. <span id="schema-toggle" style="color:var(--purple-deep); font-weight:800; cursor:pointer;" onclick="document.getElementById('schema-example').style.display=document.getElementById('schema-example').style.display==='none'?'block':'none';">Show/hide the format ▾</span></p>
+      <pre id="schema-example" style="display:none; background:#fff; border-radius:10px; padding:12px; font-size:11.5px; overflow:auto; margin-bottom:10px; border:1px solid var(--line);">[
+  {
+    "title": "Recipe Name",
+    "category": "breakfast",  // breakfast, snacks, main, sides, dessert, or drinks
+    "image": "https://...jpg",  // optional
+    "sourceName": "Site Name", "sourceUrl": "https://...",  // optional
+    "prep": 10, "cook": 20, "servingsCount": 4,
+    "tags": ["Oil-Free","No Added Sugar"],
+    "description": "A short sentence about it.",
+    "ingredients": ["1 cup oats", "2 bananas"],
+    "steps": ["Preheat oven...", "Mix everything..."]
+  }
+]</pre>
+      <textarea id="bulk-area" style="min-height:130px;" placeholder="Paste your JSON array of recipes here…"></textarea>
+      <div style="margin-top:12px; display:flex; align-items:center; gap:14px;">
+        <button class="btn btn-primary" onclick="bulkImportRecipes()">⚡ Import all</button>
+        <span id="bulk-status" style="font-size:12.5px; font-weight:700; color:var(--green-deep);"></span>
+      </div>
+    </div>
+
+    <div class="paste-box">
+      <h3>📋 Paste one & auto-fill</h3>
+      <p>Copy a single recipe's title, ingredients, and instructions from anywhere and paste the whole thing below (a link alone won't work — sites don't allow this page to fetch their content automatically, so paste the actual text). Click "Auto-fill fields" and review before saving.</p>
+      <textarea id="paste-area" placeholder="Paste the recipe text here, e.g.&#10;&#10;Chocolate Banana Oat Bites&#10;Ingredients&#10;2 ripe bananas&#10;1 cup oats&#10;...&#10;Instructions&#10;1. Mash the bananas...&#10;2. Stir in the oats..."></textarea>
+      <div style="margin-top:12px;"><button class="btn btn-primary" onclick="autoFillFromPaste()">✨ Auto-fill fields below</button></div>
+    </div>
+
+    <div class="panel">
+      <div class="form-grid">
+        <div class="field"><label>Title</label><input id="f-title" type="text" placeholder="e.g. Chocolate Banana Oat Bites"></div>
+        <div class="field"><label>Category</label>
+          <select id="f-category">${REAL_CATEGORIES.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Image URL (optional)</label><input id="f-image" type="text" placeholder="https://…jpg"></div>
+        <div class="field"><label>Source name (optional)</label><input id="f-source-name" type="text" placeholder="e.g. My Grandma"></div>
+        <div class="field"><label>Source URL (optional)</label><input id="f-source-url" type="text" placeholder="https://…"></div>
+        <div class="field"><label>Servings (number)</label><input id="f-servings-count" type="number" min="1" value="4"></div>
+        <div class="field"><label>Prep time (minutes)</label><input id="f-prep" type="number" min="0" value="10"></div>
+        <div class="field"><label>Cook time (minutes)</label><input id="f-cook" type="number" min="0" value="20"></div>
+      </div>
+      <div class="field">
+        <label>Tags</label>
+        <div class="tagcheck-row">${ALL_TAGS.map(t=>`<label class="tagcheck"><input type="checkbox" value="${t}" class="f-tag"> ${t}</label>`).join('')}</div>
+      </div>
+      <div class="field"><label>Short description</label><textarea id="f-desc" rows="2" placeholder="A sentence or two about this recipe"></textarea></div>
+      <div class="field"><label>Ingredients (one per line)</label><textarea id="f-ingredients" rows="8" placeholder="1 cup rolled oats&#10;2 ripe bananas&#10;…"></textarea></div>
+      <div class="field"><label>Instructions (one step per line)</label><textarea id="f-steps" rows="8" placeholder="Preheat the oven to 350°F.&#10;Mash the bananas in a bowl.&#10;…"></textarea></div>
+      <div class="hint">Nutrition will be estimated automatically from your ingredient list once saved — no extra step needed.</div>
+      <div style="margin-top:18px; display:flex; gap:12px;">
+        <button class="btn btn-primary" onclick="saveNewRecipe()">💾 Save recipe</button>
+        <button class="btn btn-ghost" onclick="navigate('home')">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('nav-add').classList.add('active');
+}
+
+function autoFillFromPaste(){
+  const raw = document.getElementById('paste-area').value;
+  if(!raw || !raw.trim()){ alert('Paste some recipe text first!'); return; }
+  const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  const ingHeadingIdx = lines.findIndex(l=>/^(ingredients?)\s*:?$/i.test(l) || /^ingredients?\b/i.test(l) && l.length<40);
+  const stepHeadingIdx = lines.findIndex((l,i)=> i>(ingHeadingIdx>-1?ingHeadingIdx:0) && (/^(instructions?|directions?|method|steps?)\s*:?$/i.test(l) || (/^(instructions?|directions?|method|steps?)\b/i.test(l) && l.length<40)));
+
+  let title, descLines=[], ingLines=[], stepLines=[];
+
+  if(ingHeadingIdx > -1 && stepHeadingIdx > -1){
+    title = lines[0];
+    descLines = lines.slice(1, ingHeadingIdx);
+    ingLines = lines.slice(ingHeadingIdx+1, stepHeadingIdx);
+    stepLines = lines.slice(stepHeadingIdx+1);
+  } else {
+    // heuristic fallback: classify each line as ingredient-ish or instruction-ish
+    title = lines[0];
+    const unitWords = /\b(cup|cups|tbsp|tablespoon|tsp|teaspoon|oz|ounce|lb|pound|clove|pinch|can|g|gram|kg|ml|handful)\b/i;
+    const leadingNum = /^[\d.\/½¼¾⅓⅔⅛]/;
+    for(let i=1;i<lines.length;i++){
+      const l = lines[i];
+      if(leadingNum.test(l) && unitWords.test(l) && l.length<90){ ingLines.push(l); }
+      else if(leadingNum.test(l) || l.length>60){ stepLines.push(l); }
+      else if(ingLines.length===0 && stepLines.length===0){ descLines.push(l); }
+      else { stepLines.push(l); }
+    }
+  }
+  function stripBullet(s){ return s.replace(/^[-•*▢\[\]\s]+/,'').replace(/^\d+[\.\)]\s*/,'').replace(/^step\s*\d+\s*[:\.]?\s*/i,'').trim(); }
+
+  document.getElementById('f-title').value = title || '';
+  document.getElementById('f-desc').value = descLines.join(' ').slice(0,300);
+  document.getElementById('f-ingredients').value = ingLines.map(stripBullet).filter(Boolean).join('\n');
+  document.getElementById('f-steps').value = stepLines.map(stripBullet).filter(Boolean).join('\n');
+  document.getElementById('f-title').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+async function bulkImportRecipes(){
+  const raw = document.getElementById('bulk-area').value.trim();
+  const status = document.getElementById('bulk-status');
+  if(!raw){ status.style.color = '#b5354a'; status.textContent = 'Paste some recipe JSON first.'; return; }
+  let data;
+  try{ data = JSON.parse(raw); }
+  catch(e){ status.style.color = '#b5354a'; status.textContent = "Couldn't read that as valid JSON — check for a missing bracket or comma."; return; }
+  if(!Array.isArray(data)) data = [data];
+
+  const validCats = REAL_CATEGORIES.map(c=>c.id);
+  let added = 0, skipped = 0;
+  data.forEach((item, i)=>{
+    if(!item || !item.title || !Array.isArray(item.ingredients) || !Array.isArray(item.steps) || item.ingredients.length===0 || item.steps.length===0){
+      skipped++; return;
+    }
+    const cat = validCats.includes(item.category) ? item.category : 'main';
+    const servingsCount = parseInt(item.servingsCount) || 4;
+    CUSTOM_RECIPES.push({
+      id: 'custom-' + Date.now() + '-' + i,
+      category: cat,
+      title: String(item.title),
+      image: item.image || PLACEHOLDER_IMG,
+      source: (item.sourceName || item.sourceUrl) ? {name: item.sourceName || 'source', url: item.sourceUrl || '#'} : {name:'Added by you', url:'#'},
+      rating: 5.0, reviews: 0,
+      prep: parseInt(item.prep)||0, cook: parseInt(item.cook)||0,
+      servings: servingsCount + ' servings', servingsCount: servingsCount,
+      tags: Array.isArray(item.tags) ? item.tags.filter(t=>ALL_TAGS.includes(t)) : [],
+      description: item.description || 'A recipe added by Emily.',
+      ingredients: item.ingredients.map(String),
+      steps: item.steps.map(String),
+      custom: true
+    });
+    added++;
+  });
+
+  if(added>0){ await saveCustomRecipes(CUSTOM_RECIPES); }
+  status.style.color = added>0 ? 'var(--green-deep)' : '#b5354a';
+  status.textContent = `Added ${added} recipe${added!==1?'s':''}.` + (skipped>0 ? ` Skipped ${skipped} (missing title/ingredients/steps).` : '');
+  if(added>0){ document.getElementById('bulk-area').value=''; setTimeout(()=>navigate('home'), 1200); }
+}
+
+async function saveNewRecipe(){
+  const title = document.getElementById('f-title').value.trim();
+  const ingredients = document.getElementById('f-ingredients').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const steps = document.getElementById('f-steps').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!title || ingredients.length===0 || steps.length===0){
+    alert('Please fill in at least a title, ingredients, and instructions.');
+    return;
+  }
+  const tags = Array.from(document.querySelectorAll('.f-tag:checked')).map(el=>el.value);
+  const servingsCount = parseInt(document.getElementById('f-servings-count').value) || 4;
+  const sourceName = document.getElementById('f-source-name').value.trim();
+  const sourceUrl = document.getElementById('f-source-url').value.trim();
+  const newRecipe = {
+    id: 'custom-' + Date.now(),
+    category: document.getElementById('f-category').value,
+    title: title,
+    image: document.getElementById('f-image').value.trim() || PLACEHOLDER_IMG,
+    source: sourceName || sourceUrl ? {name: sourceName || 'your own recipe', url: sourceUrl || '#'} : {name:'Added by you', url:'#'},
+    rating: 5.0, reviews: 0,
+    prep: parseInt(document.getElementById('f-prep').value)||0,
+    cook: parseInt(document.getElementById('f-cook').value)||0,
+    servings: servingsCount + ' servings', servingsCount: servingsCount,
+    tags: tags,
+    description: document.getElementById('f-desc').value.trim() || 'A recipe added by Emily.',
+    ingredients: ingredients,
+    steps: steps,
+    custom: true
+  };
+  CUSTOM_RECIPES.push(newRecipe);
+  await saveCustomRecipes(CUSTOM_RECIPES);
+  navigate('recipe', newRecipe.id);
+}
+
+/* =========================================================
+   MAIN RENDER DISPATCH
+========================================================= */
+async function render(){
+  renderFilterRow();
+  document.getElementById('nav-home').classList.toggle('active', state.route==='home');
+  document.getElementById('nav-fav').classList.toggle('active', state.route==='favorites');
+  document.getElementById('nav-add').classList.toggle('active', state.route==='add');
+  document.getElementById('search-input').value = state.query;
+
+  if(state.route==='favorites'){ await renderFavorites(); return; }
+  if(state.route==='recipe'){ await renderRecipe(state.recipeId); return; }
+  if(state.route==='add'){ renderAddRecipe(); return; }
+
+  await refreshFavCache();
+  const app = document.getElementById('app');
+  if(state.route==='category') app.innerHTML = renderCategory(state.categoryId);
+  else if(state.route==='search') app.innerHTML = renderSearch();
+  else app.innerHTML = renderHome();
+}
+
+(async function init(){
+  CUSTOM_RECIPES = await getCustomRecipes();
+  render();
+})();
+</script>
+</body>
+</html>
